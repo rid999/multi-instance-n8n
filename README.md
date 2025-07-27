@@ -1,47 +1,45 @@
-Here's a refined and formatted README.md for your GitHub repository, making it clearer and more engaging:
+###🔁 Multi-instance n8n Setup on VPS (Docker-based)
+Panduan ini menyediakan solusi tangguh untuk menjalankan beberapa instance n8n yang terisolasi pada satu Virtual Private Server (VPS) menggunakan Docker dan Docker Compose. Pengaturan ini ideal untuk mengelola lingkungan n8n yang terpisah untuk klien, proyek, atau tujuan pengujian yang berbeda, memastikan isolasi penuh data dan konfigurasi.
 
-🔁 Multi-instance n8n Setup on VPS (Docker-based)
-This guide provides a robust solution for running multiple isolated n8n instances on a single Virtual Private Server (VPS) using Docker and Docker Compose. This setup is ideal for managing separate n8n environments for different clients, projects, or testing purposes, ensuring complete isolation of data and configurations.
+📦 Persyaratan
+Sebelum memulai, pastikan Anda memiliki hal-hal berikut:
 
-📦 Requirements
-Before you begin, make sure you have the following:
+VPS: Sebuah Virtual Private Server yang menjalankan Ubuntu atau Debian.
 
-VPS: A Virtual Private Server running Ubuntu or Debian.
+Docker & Docker Compose: Keduanya sudah terinstal di VPS Anda.
 
-Docker & Docker Compose: Both installed on your VPS.
+Port Terbuka: Pastikan port yang diinginkan untuk instance n8n (misalnya, 5678, 5679) terbuka di firewall VPS Anda.
 
-Open Ports: Ensure the desired ports for n8n instances (e.g., 5678, 5679) are open in your VPS firewall.
+Akses SSH: Akses Secure Shell (SSH) ke VPS Anda.
 
-SSH Access: Secure Shell (SSH) access to your VPS.
+🚀 Langkah-langkah Instalasi
+Ikuti langkah-langkah ini untuk menyiapkan lingkungan n8n multi-instance Anda:
 
-🚀 Installation Steps
-Follow these steps to set up your multi-instance n8n environment:
-
-1. Install Docker & Docker Compose
-If you don't already have Docker and Docker Compose installed, run the following commands:
+1. Instal Docker & Docker Compose
+Jika Anda belum menginstal Docker dan Docker Compose, jalankan perintah berikut:
 
 Bash
 
 sudo apt update && sudo apt install -y docker.io docker-compose
 sudo systemctl enable docker
 sudo systemctl start docker
-2. Create Project Directory Structure
-Organize your n8n project directories. Each project will have its own dedicated directory for data storage.
+2. Buat Struktur Direktori Proyek
+Atur direktori proyek n8n Anda. Setiap proyek akan memiliki direktori khusus sendiri untuk penyimpanan data.
 
 Bash
 
 mkdir -p ~/multi-n8n/projectA ~/multi-n8n/projectB
 cd ~/multi-n8n
-This structure ensures:
+Struktur ini memastikan:
 
-Isolated Data Volumes: Each n8n instance will have its own data volume.
+Volume Data Terisolasi: Setiap instance n8n akan memiliki volume datanya sendiri.
 
-Separate Authentication: Unique credentials for each instance.
+Autentikasi Terpisah: Kredensial unik untuk setiap instance.
 
-Dedicated Ports: Each instance will be accessible via a distinct port.
+Port Khusus: Setiap instance akan dapat diakses melalui port yang berbeda.
 
-3. Create docker-compose.yml
-Create a docker-compose.yml file in the ~/multi-n8n directory with the following content:
+3. Buat docker-compose.yml
+Buat file docker-compose.yml di direktori ~/multi-n8n dengan konten berikut:
 
 YAML
 
@@ -59,8 +57,8 @@ services:
       - GENERIC_TIMEZONE=Asia/Jakarta
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
-      - N8N_BASIC_AUTH_PASSWORD=projectApass # <--- CHANGE THIS PASSWORD
-      - WEBHOOK_TUNNEL_URL=http://your-vps-ip:5678 # <--- REPLACE WITH YOUR VPS IP
+      - N8N_BASIC_AUTH_PASSWORD=projectApass # <--- GANTI DENGAN SANDI ANDA
+      - WEBHOOK_TUNNEL_URL=http://your-vps-ip:5678 # <--- GANTI DENGAN IP VPS ANDA
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
 
@@ -75,61 +73,59 @@ services:
       - GENERIC_TIMEZONE=Asia/Jakarta
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
-      - N8N_BASIC_AUTH_PASSWORD=projectBpass # <--- CHANGE THIS PASSWORD
-      - WEBHOOK_TUNNEL_URL=http://your-vps-ip:5679 # <--- REPLACE WITH YOUR VPS IP
+      - N8N_BASIC_AUTH_PASSWORD=projectBpass # <--- GANTI DENGAN SANDI ANDA
+      - WEBHOOK_TUNNEL_URL=http://your-vps-ip:5679 # <--- GANTI DENGAN IP VPS ANDA
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5679
-🔧 Important: Remember to replace your-vps-ip with your actual VPS IP address and update the N8N_BASIC_AUTH_PASSWORD for each project with strong, unique passwords.
+🔧 Penting: Ingatlah untuk mengganti your-vps-ip dengan alamat IP VPS Anda yang sebenarnya dan perbarui N8N_BASIC_AUTH_PASSWORD untuk setiap proyek dengan sandi yang kuat dan unik.
 
-4. Start the Containers
-Navigate to the ~/multi-n8n directory and start your n8n instances using Docker Compose:
+4. Mulai Kontainer
+Arahkan ke direktori ~/multi-n8n dan mulai instance n8n Anda menggunakan Docker Compose:
 
 Bash
 
 docker compose up -d
-To verify that your containers are running, execute:
+Untuk memverifikasi bahwa kontainer Anda berjalan, jalankan:
 
 Bash
 
 docker ps
-5. Access Each n8n Instance
-You can now access your n8n instances using the following URLs and credentials:
+5. Akses Setiap Instance n8n
+Anda sekarang dapat mengakses instance n8n Anda menggunakan URL dan kredensial berikut:
 
-Instance	URL	Auth Credentials
+Instance	URL	Kredensial Autentikasi
 Project A	http://your-vps-ip:5678	admin / projectApass
 Project B	http://your-vps-ip:5679	admin / projectBpass
 
 Export to Sheets
-✅ Note: Use the credentials you defined in your docker-compose.yml file.
+✅ Catatan: Gunakan kredensial yang Anda definisikan di file docker-compose.yml Anda.
 
-🔐 Optional: Setup with NGINX & SSL (Reverse Proxy)
-For a more secure and user-friendly setup, you can expose each n8n instance via a subdomain with HTTPS using NGINX and Certbot. This allows you to use friendly URLs like projecta.example.com instead of IP addresses and ports.
+🔐 Opsional: Pengaturan dengan NGINX & SSL (Reverse Proxy)
+Untuk pengaturan yang lebih aman dan mudah digunakan, Anda dapat mengekspos setiap instance n8n melalui subdomain dengan HTTPS menggunakan NGINX dan Certbot. Ini memungkinkan Anda menggunakan URL yang ramah seperti projecta.example.com alih-alih alamat IP dan port.
 
 Instance	Subdomain	Port
 Project A	projecta.example.com	5678
 Project B	projectb.example.com	5679
 
 Export to Sheets
-If you need assistance configuring NGINX as a reverse proxy with SSL, please feel free to ask for a full configuration example.
+Jika Anda memerlukan bantuan untuk mengonfigurasi NGINX sebagai reverse proxy dengan SSL, jangan ragu untuk meminta contoh konfigurasi lengkap.
 
-🔁 Auto-start on VPS Reboot
-By default, Docker Compose is configured to automatically restart your n8n containers if the VPS reboots or the containers stop unexpectedly.
+🔁 Auto-start pada Reboot VPS
+Secara default, Docker Compose dikonfigurasi untuk secara otomatis memulai ulang kontainer n8n Anda jika VPS di-reboot atau kontainer berhenti secara tak terduga.
 
-To manually restart all n8n instances:
+Untuk memulai ulang semua instance n8n secara manual:
 
 Bash
 
 docker compose restart
-If you wish to disable the auto-restart behavior for a specific container, use:
+Jika Anda ingin menonaktifkan perilaku auto-restart untuk kontainer tertentu, gunakan:
 
 Bash
 
 docker update --restart=no [container_name]
-📂 Data Persistence
-Each n8n instance stores its critical data (including credentials, workflows, and execution history) in its own dedicated volume on your VPS:
+📂 Persistensi Data
+Setiap instance n8n menyimpan data pentingnya (termasuk kredensial, alur kerja, dan riwayat eksekusi) dalam volume khusus di VPS Anda:
 
-~/multi-n8n/projectA → Maps to /home/node/.n8n inside the n8n_projectA container.
+~/multi-n8n/projectA → Memetakan ke /home/node/.n8n di dalam kontainer n8n_projectA.
 
-~/multi-n8n/projectB → Maps to /home/node/.n8n inside the n8n_projectB container.
-
-You can easily back up these directories or bind-mount them to external storage solutions for enhanced data management and recovery.
+~/multi-n8n/projectB → Memetakan ke /home/node/.n8n di dalam kontainer n8n_projectB.
