@@ -8,7 +8,7 @@ This guide allows you to run multiple isolated **n8n** instances (e.g. for diffe
 
 ## 📦 Requirements
 
-- VPS with Ubuntu/Debian
+- VPS with Ubuntu/Debian 20,21,22,24
 - Docker & Docker Compose installed
 - Ports open (e.g. `5678`, `5679`)
 - Basic shell access (SSH)
