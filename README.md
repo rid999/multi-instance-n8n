@@ -1,40 +1,45 @@
 # multi-instance-n8n
 
-This guide allows you to run multiple isolated n8n instances (e.g. for different clients or projects) on the same VPS using Docker + Docker Compose.
+# 🔁 Multi-instance n8n Setup on VPS (Docker-based)
 
-📦 Requirements
-VPS with Ubuntu/Debian
+This guide allows you to run multiple isolated **n8n** instances (e.g. for different clients or projects) on the same VPS using **Docker + Docker Compose**.
 
-Docker & Docker Compose installed
+---
 
-Ports open (e.g. 5678, 5679)
+## 📦 Requirements
 
-Basic shell access (SSH)
+- VPS with Ubuntu/Debian
+- Docker & Docker Compose installed
+- Ports open (e.g. `5678`, `5679`)
+- Basic shell access (SSH)
 
-🚀 Installation Steps
-1. Install Docker & Docker Compose (if not yet)
-bash
-Copy
-Edit
+---
+
+## 🚀 Installation Steps
+
+### 1. Install Docker & Docker Compose (if not yet)
+
+```bash
 sudo apt update && sudo apt install -y docker.io docker-compose
 sudo systemctl enable docker
 sudo systemctl start docker
-2. Directory Structure
-bash
-Copy
-Edit
+
+
+**### 2. Create Project Directory Structure**
 mkdir -p ~/multi-n8n/projectA ~/multi-n8n/projectB
 cd ~/multi-n8n
+
 Each project will have:
 
 Its own data volume
 
 Its own auth credentials
 
-Its own port
+Its own exposed port
+
 
 3. Create docker-compose.yml
-Create the following docker-compose.yml in ~/multi-n8n:
+Create the following docker-compose.yml file inside the ~/multi-n8n directory:
 
 yaml
 Copy
@@ -73,41 +78,53 @@ services:
       - WEBHOOK_TUNNEL_URL=http://your-vps-ip:5679
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5679
-Replace your-vps-ip and passwords as needed.
+🔧 Replace your-vps-ip and passwords as needed.
 
 4. Start the Containers
 bash
 Copy
 Edit
 docker compose up -d
-To check status:
+Check running containers:
 
 bash
 Copy
 Edit
 docker ps
 5. Access Each n8n Instance
-🌐 http://your-vps-ip:5678 → Project A
+Instance	URL	Auth (default)
+Project A	http://your-vps-ip:5678	admin / projectApass
+Project B	http://your-vps-ip:5679	admin / projectBpass
 
-🌐 http://your-vps-ip:5679 → Project B
-
-Login with basic auth credentials you set (admin / projectApass or projectBpass).
+✅ Login with basic auth credentials you configured in docker-compose.yml.
 
 🔐 Optional: Setup with NGINX & SSL (Reverse Proxy)
-You can route each instance via subdomains:
+You can route each instance via subdomains (optional):
 
 Instance	Subdomain	Port
 Project A	projecta.example.com	5678
 Project B	projectb.example.com	5679
 
-Let me know if you want a NGINX + Certbot config for auto-HTTPS + routing.
+Let me know if you want a pre-made NGINX + Certbot config for automatic HTTPS routing.
 
 🔁 Auto-start on Reboot
-Docker Compose keeps containers running by default unless stopped manually. You’re good to go.
+Docker Compose will auto-restart containers unless manually stopped:
 
+bash
+Copy
+Edit
+docker compose restart
+To disable auto-start, use:
+
+bash
+Copy
+Edit
+docker update --restart=no [container_name]
 📂 Data Persistence
-Each project’s data is stored in its respective volume:
+Each instance stores workflows and credentials in its own volume:
 
-~/multi-n8n/projectA → /home/node/.n8n in container
+~/multi-n8n/projectA → /home/node/.n8n (in container)
 
-~/multi-n8n/projectB → same
+~/multi-n8n/projectB → /home/node/.n8n (in container)
+
+You can back these up or mount to external storage if needed.
